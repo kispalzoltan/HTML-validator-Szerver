@@ -18,6 +18,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/public/**")
+                        .permitAll()
                         .requestMatchers("/api/**")
                         //.authenticated()
                         //.anyRequest().

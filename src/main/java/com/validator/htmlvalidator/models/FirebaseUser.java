@@ -7,12 +7,9 @@ public class FirebaseUser {
     private String email;
     private List<OwnRule> ownRules;
 
-    public FirebaseUser() {
-    }
+    private List<OwnRuleGroup> ownRuleGroups;
 
-    public FirebaseUser(String email, List<OwnRule> ownRules) {
-        this.email = email;
-        this.ownRules = ownRules;
+    public FirebaseUser() {
     }
 
     public String getEmail() {
@@ -29,5 +26,13 @@ public class FirebaseUser {
 
     public void setOwnRules(List<OwnRule> ownRules) {
         this.ownRules = ownRules;
+    }
+
+    public List<OwnRuleGroup> getOwnRuleGroups() {
+        return ownRuleGroups;
+    }
+
+    public void setOwnRuleGroups(List<OwnRuleGroup> ownRuleGroups) {
+        this.ownRuleGroups = ownRuleGroups;
     }
 }

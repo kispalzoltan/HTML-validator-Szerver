@@ -89,4 +89,18 @@ public class OwnRule {
     public void setFix(String fix) {
         this.fix = fix;
     }
+
+    @Override
+    public String toString() {
+        return "OwnRule{" +
+                "id=" + id +
+                ", ruleName='" + ruleName + '\'' +
+                ", tagName='" + tagName + '\'' +
+                ", attributes=" + attributes +
+                ", type='" + type + '\'' +
+                ", priority=" + priority +
+                ", message='" + message + '\'' +
+                ", fix='" + fix + '\'' +
+                '}';
+    }
 }

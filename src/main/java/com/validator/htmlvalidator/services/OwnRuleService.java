@@ -5,9 +5,12 @@ import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
 import com.validator.htmlvalidator.models.FirebaseUser;
 import com.validator.htmlvalidator.models.OwnRule;
+import com.validator.htmlvalidator.models.OwnRuleGroup;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 @Service
 public class OwnRuleService {
@@ -63,18 +66,78 @@ public class OwnRuleService {
         return this.firebaseUser.getOwnRules();
     }
 
+
+
+
     public void deleteOwnRule(String email, OwnRule ruleToDelete) throws ExecutionException, InterruptedException {
-        System.out.println("asd "+ruleToDelete.getRuleName());
+        System.out.println("asd "+ruleToDelete.toString());
         FirebaseUser tempFirebaseUser = this.getRuleOwner(email);
 
         if (tempFirebaseUser == null){
             throw new RuntimeException("Firebase userObject is null!");
         }
         List<OwnRule> tempList = tempFirebaseUser.getOwnRules();
+
+        List<OwnRule> newList = new ArrayList<>();
+        for(OwnRule rule : tempList){
+            if (!Objects.equals(rule.getRuleName(), ruleToDelete.getRuleName())){
+                newList.add(rule);
+            }
+        }
         System.out.println(tempList.size());
-        System.out.println(tempList.remove(ruleToDelete));
+        System.out.println(newList.size());
+        tempFirebaseUser.setOwnRules(newList);
+        dbFirestore.collection(COLLECTION_NAME).document(email).set(tempFirebaseUser);
+
+    }
+    public List<OwnRuleGroup> getOwnRuleGroups(String email) throws ExecutionException, InterruptedException{
+        System.out.println("email: " + email);
+        CollectionReference collection = dbFirestore.collection(COLLECTION_NAME);
+        Query query = collection.whereEqualTo("email", email);
+        ApiFuture<QuerySnapshot> future = query.get();
+        QuerySnapshot querySnapshot = future.get();
+        if (!querySnapshot.isEmpty()) {
+            DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+            this.firebaseUser = document.toObject(FirebaseUser.class);
+            System.out.println("Document data: " + document.getData());
+        } else {
+            System.out.println("No such document!");
+        }
+        return this.firebaseUser.getOwnRuleGroups();
+    }
+
+    public String saveOwnRuleGroups(OwnRuleGroup ownRuleGroup, String email) throws ExecutionException, InterruptedException {
+        FirebaseUser tempFirebaseUser = this.getRuleOwner(email);
+
+        if (tempFirebaseUser == null){
+            throw new RuntimeException("Firebase userObject is null!");
+        }
+        List<OwnRuleGroup> tempList = tempFirebaseUser.getOwnRuleGroups();
+        tempList.add(ownRuleGroup);
+        tempFirebaseUser.setOwnRuleGroups(tempList);
+        ApiFuture<WriteResult> collectionApiFurure = dbFirestore.collection(COLLECTION_NAME).document(email).set(tempFirebaseUser);
+
+        return collectionApiFurure.get().getUpdateTime().toString();
+
+    }
+    public void deleteOwnRuleGroup(String email, OwnRuleGroup groupToDelete) throws ExecutionException, InterruptedException {
+        System.out.println("asd "+groupToDelete.getGroupName());
+        FirebaseUser tempFirebaseUser = this.getRuleOwner(email);
+
+        if (tempFirebaseUser == null){
+            throw new RuntimeException("Firebase userObject is null!");
+        }
+        List<OwnRuleGroup> tempList = tempFirebaseUser.getOwnRuleGroups();
+
+        List<OwnRuleGroup> newList = new ArrayList<>();
+        for(OwnRuleGroup group : tempList){
+            if (!Objects.equals(group.getGroupName(), groupToDelete.getGroupName())){
+                newList.add(group);
+            }
+        }
         System.out.println(tempList.size());
-        tempFirebaseUser.setOwnRules(tempList);
+        System.out.println(newList.size());
+        tempFirebaseUser.setOwnRuleGroups(newList);
         dbFirestore.collection(COLLECTION_NAME).document(email).set(tempFirebaseUser);
 
     }

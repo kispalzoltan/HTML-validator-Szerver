@@ -16,7 +16,8 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String authenticationHeader = request.getHeader("Authorization");
-
+        System.out.println(request.getRequestURL().toString().contains("public"));
+        if(!(request.getRequestURL().toString().contains("public"))){
         if (authenticationHeader == null || !authenticationHeader.startsWith("Bearer ")) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             System.err.println("Not start with Bearer");
@@ -40,7 +41,7 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
             System.err.println("decodedtoken is null");
             return;
-        }
+        }}
 
         filterChain.doFilter(request, response);
     }
