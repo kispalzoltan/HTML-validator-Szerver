@@ -1,5 +1,6 @@
 package com.validator.htmlvalidator.controller;
 
+import com.google.cloud.firestore.Firestore;
 import com.validator.htmlvalidator.models.*;
 import com.validator.htmlvalidator.services.OwnRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,14 @@ import java.util.concurrent.ExecutionException;
 @RequestMapping("/api")
 public class OwnRuleController {
 
-    @Autowired
+    private final Firestore firestore;
     private OwnRuleService ownRuleService;
+    @Autowired
+    public OwnRuleController(Firestore firestore) {
+        this.firestore = firestore;
+        this.ownRuleService = new OwnRuleService(firestore);
+    }
+
 
     @PostMapping("/ownRuleOwner")
     public FirebaseUser getRuleOwner(@RequestBody String email) throws ExecutionException, InterruptedException {
@@ -96,5 +103,6 @@ public class OwnRuleController {
             System.err.println("Error when /deleteOwnRuleGroup called: "+e.toString());
         }
 
-    }
+    } 
+    
 }

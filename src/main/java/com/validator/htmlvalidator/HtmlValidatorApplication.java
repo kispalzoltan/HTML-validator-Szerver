@@ -13,13 +13,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Objects;
 
-@Configuration
 @SpringBootApplication
 public class HtmlValidatorApplication {
 
 
 	public static void main(String[] args) {
-
+/*
 		ClassLoader classLoader = HtmlValidatorApplication.class.getClassLoader();
 
 		File file = new File(Objects.requireNonNull(classLoader.getResource("serviceAccountKey.json")).getFile());
@@ -40,7 +39,7 @@ public class HtmlValidatorApplication {
 		} catch (IOException e) {
 			System.out.println("Error: " + e);
 		}
-
+*/
 		SpringApplication.run(HtmlValidatorApplication.class, args);
 	}
 }

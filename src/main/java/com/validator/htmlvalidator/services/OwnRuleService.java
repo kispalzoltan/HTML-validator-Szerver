@@ -1,24 +1,36 @@
 package com.validator.htmlvalidator.services;
 
 import com.google.api.core.ApiFuture;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.*;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.cloud.FirestoreClient;
+import com.validator.htmlvalidator.HtmlValidatorApplication;
 import com.validator.htmlvalidator.models.FirebaseUser;
 import com.validator.htmlvalidator.models.OwnRule;
 import com.validator.htmlvalidator.models.OwnRuleGroup;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 @Service
-public class OwnRuleService {
+public class OwnRuleService { 
     private static final String COLLECTION_NAME = "users";
-    private Firestore dbFirestore = FirestoreClient.getFirestore();
+    private final Firestore dbFirestore;
 
     private FirebaseUser firebaseUser;
 
+    @Autowired
+    public OwnRuleService(Firestore firestore) {
+        this.dbFirestore = firestore;
+    }
     public FirebaseUser getRuleOwner(String email) throws ExecutionException, InterruptedException{
         System.out.println("email: " + email);
         CollectionReference collection = dbFirestore.collection(COLLECTION_NAME);
@@ -141,4 +153,6 @@ public class OwnRuleService {
         dbFirestore.collection(COLLECTION_NAME).document(email).set(tempFirebaseUser);
 
     }
+
+ 
 }
