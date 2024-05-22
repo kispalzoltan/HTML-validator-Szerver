@@ -1,14 +1,23 @@
 package com.validator.htmlvalidator.services;
 
+import com.validator.htmlvalidator.exceptions.MessageFailedException;
+import com.validator.htmlvalidator.models.ChatGPTRequest;
+import com.validator.htmlvalidator.models.ChatGPTResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-
+@Service
 public class OpenaiService {
+
+    @Autowired
+    private RestTemplate restTemplate;
+
     @Value("${openai.model}")
     private String model;
 
@@ -18,10 +27,14 @@ public class OpenaiService {
     @Value("${openai.api.key}")
     private String apiKey;
 
-    public String getOpenaiResponse(String input) {
+    private static final String CHAT_GPT_FAILED = "The ChatBot cannot answer this!";
+
+    public String getOpenaiResponse(String input) throws MessageFailedException {
+        ChatGPTRequest chatGPTRequest = new ChatGPTRequest(model, input);
         // Prepare HTTP request
-        String requestUrl = apiUrl + "?model=" + model;
+        String requestUrl = apiUrl;
         String requestBody = "{\"prompt\": \"" + input + "\"}";
+
 
         // Add API key to headers
         HttpHeaders headers = new HttpHeaders();
@@ -29,10 +42,23 @@ public class OpenaiService {
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         // Make HTTP POST request
-        HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<String> response = new RestTemplate().postForEntity(requestUrl, entity, String.class);
+        HttpEntity<ChatGPTRequest> entity = new HttpEntity<>(chatGPTRequest, headers);
+        ResponseEntity<ChatGPTResponse> response = new RestTemplate().postForEntity(requestUrl, entity, ChatGPTResponse.class);
+        //ChatGPTResponse response = restTemplate.postForObject(requestUrl, entity)
 
-        // Return response body
-        return response.getBody();
+        String evaulatedResponse = evaluateResponse(response.getBody());
+        return evaulatedResponse;
     }
+
+    private String evaluateResponse(ChatGPTResponse response) throws MessageFailedException {
+        checkResponse(response);
+        return response.getChoices().get(0).getMessage().getContent();
+    }
+
+    private void checkResponse(ChatGPTResponse response) throws MessageFailedException {
+        if (response == null || response.getChoices() == null || response.getChoices().isEmpty()) {
+            throw new MessageFailedException(CHAT_GPT_FAILED);
+        }
+    }
+
 }

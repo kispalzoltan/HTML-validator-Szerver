@@ -56,8 +56,7 @@ public class FirebaseConfig {
 
         URL url = classLoader.getResource("serviceAccountKey.json");
         if (url != null) {
-            System.out.println(url.getFile()); // This will print the path to the resource within the JAR
-            InputStream serviceAccount = url.openStream(); // Open the stream directly from the URL
+            InputStream serviceAccount = url.openStream();
 
 
             FirebaseOptions options = new FirebaseOptions.Builder()
@@ -66,7 +65,6 @@ public class FirebaseConfig {
 
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
-                //System.err.println(FirebaseApp.getInstance().getName());
             }
         }
 

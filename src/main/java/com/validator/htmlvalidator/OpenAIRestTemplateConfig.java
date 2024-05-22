@@ -1,4 +1,4 @@
-package hu.szte.restairanto.config;
+package com.validator.htmlvalidator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class OpenAIRestTemplateConfig {
 
-    @Value("${CHATGPT_API_KEY}")
+    @Value("${openai.api.key}")
     private String API_KEY;
 
     @Bean
@@ -25,11 +25,4 @@ public class OpenAIRestTemplateConfig {
         return restTemplate;
     }
 
-    @Bean
-    public ObjectMapper objectMapper(){
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        return mapper;
-    }
 }
